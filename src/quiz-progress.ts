@@ -38,20 +38,20 @@ export class QuizProgress extends LitElement {
       display: block;
       font-size: 0.8rem;
       font-weight: 500;
-      color: #86868b;
+      color: var(--color-text-secondary);
       margin-bottom: 0.5rem;
     }
 
     .bar {
       height: 4px;
-      background: #e8e8ed;
+      background: var(--color-border-light);
       border-radius: 2px;
       overflow: hidden;
     }
 
     .fill {
       height: 100%;
-      background: #0071e3;
+      background: var(--color-accent);
       border-radius: 2px;
       transition: width 0.4s ease;
     }

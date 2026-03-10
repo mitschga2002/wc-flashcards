@@ -44,8 +44,8 @@ export class QuizResults extends LitElement {
     .results {
       text-align: center;
       padding: 3rem 2rem;
-      background: white;
-      border: 1px solid #d2d2d7;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
       border-radius: 16px;
       animation: slideIn 0.3s ease-out;
     }
@@ -64,7 +64,7 @@ export class QuizResults extends LitElement {
     .score {
       font-size: 3rem;
       font-weight: 700;
-      color: #0071e3;
+      color: var(--color-accent);
       margin: 0.25rem 0 2rem;
     }
 
@@ -91,26 +91,26 @@ export class QuizResults extends LitElement {
       font-size: 0.75rem;
       font-weight: 500;
       text-transform: uppercase;
-      color: #86868b;
+      color: var(--color-text-secondary);
     }
 
     .correct {
-      color: #34c759;
+      color: var(--color-correct);
     }
 
     .wrong {
-      color: #ff3b30;
+      color: var(--color-wrong);
     }
 
     .total {
-      color: #1d1d1f;
+      color: var(--color-text);
     }
 
     .btn {
       display: inline-block;
       padding: 0.75rem 1.75rem;
-      background: #0071e3;
-      color: white;
+      background: var(--color-accent);
+      color: #fff;
       border: none;
       border-radius: 980px;
       font-size: 0.95rem;
@@ -118,11 +118,12 @@ export class QuizResults extends LitElement {
     }
 
     .btn:hover {
-      background: #0077ed;
+      background: var(--color-accent-hover);
     }
 
     .btn:focus-visible {
-      outline: 3px solid rgba(0, 113, 227, 0.4);
+      outline: 3px solid
+        color-mix(in srgb, var(--color-accent) 40%, transparent);
       outline-offset: 2px;
     }
 

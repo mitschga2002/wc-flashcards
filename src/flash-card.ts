@@ -112,8 +112,8 @@ export class FlashCard extends LitElement {
 
   static styles = css`
     .card {
-      background: white;
-      border: 1px solid #d2d2d7;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
       border-radius: 16px;
       padding: 2rem;
       animation: slideIn 0.3s ease-out;
@@ -148,7 +148,7 @@ export class FlashCard extends LitElement {
     .question {
       font-size: 1.3rem;
       font-weight: 600;
-      color: #1d1d1f;
+      color: var(--color-text);
       margin: 0 0 1.5rem;
     }
 
@@ -173,11 +173,11 @@ export class FlashCard extends LitElement {
       display: flex;
       align-items: center;
       gap: 0.625rem;
-      background: #f5f5f7;
+      background: var(--color-surface-secondary);
       border: 1.5px solid transparent;
       border-radius: 12px;
       padding: 0.875rem 1rem;
-      color: #1d1d1f;
+      color: var(--color-text);
       font-size: 0.95rem;
       font-weight: 400;
       cursor: pointer;
@@ -191,32 +191,33 @@ export class FlashCard extends LitElement {
       width: 1.4rem;
       height: 1.4rem;
       border-radius: 5px;
-      background: #e8e8ed;
-      color: #86868b;
+      background: var(--color-key-hint-bg);
+      color: var(--color-key-hint-text);
       font-size: 0.75rem;
       font-weight: 600;
       flex-shrink: 0;
     }
 
     .choice:hover:not(:disabled) {
-      background: #e8e8ed;
+      background: var(--color-border-light);
     }
 
     .choice:focus-visible {
-      outline: 3px solid rgba(0, 113, 227, 0.4);
+      outline: 3px solid
+        color-mix(in srgb, var(--color-accent) 40%, transparent);
       outline-offset: 1px;
     }
 
     .choice.correct {
-      background: rgba(52, 199, 89, 0.12);
-      border-color: #34c759;
-      color: #248a3d;
+      background: var(--color-correct-bg);
+      border-color: var(--color-correct);
+      color: var(--color-correct-text);
     }
 
     .choice.wrong {
-      background: rgba(255, 59, 48, 0.1);
-      border-color: #ff3b30;
-      color: #d70015;
+      background: var(--color-wrong-bg);
+      border-color: var(--color-wrong);
+      color: var(--color-wrong-text);
     }
 
     .choice.disabled {
@@ -231,8 +232,8 @@ export class FlashCard extends LitElement {
       display: block;
       margin: 1.5rem 0 0 auto;
       padding: 0.65rem 1.5rem;
-      background: #0071e3;
-      color: white;
+      background: var(--color-accent);
+      color: #fff;
       border: none;
       border-radius: 980px;
       font-size: 0.95rem;
@@ -241,16 +242,17 @@ export class FlashCard extends LitElement {
     }
 
     .next-btn:hover:not(:disabled) {
-      background: #0077ed;
+      background: var(--color-accent-hover);
     }
 
     .next-btn:disabled {
-      background: #d2d2d7;
+      background: var(--color-disabled-btn);
       cursor: not-allowed;
     }
 
     .next-btn:focus-visible {
-      outline: 3px solid rgba(0, 113, 227, 0.4);
+      outline: 3px solid
+        color-mix(in srgb, var(--color-accent) 40%, transparent);
       outline-offset: 2px;
     }
   `;

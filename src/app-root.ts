@@ -128,14 +128,14 @@ export class AppRoot extends LitElement {
     .loader {
       text-align: center;
       padding: 4rem 0;
-      color: #86868b;
+      color: var(--color-text-secondary);
     }
 
     .spinner {
       width: 32px;
       height: 32px;
-      border: 3px solid #e8e8ed;
-      border-top-color: #0071e3;
+      border: 3px solid var(--color-border-light);
+      border-top-color: var(--color-accent);
       border-radius: 50%;
       margin: 0 auto 1rem;
       animation: spin 0.7s linear infinite;
@@ -150,15 +150,15 @@ export class AppRoot extends LitElement {
     .error {
       text-align: center;
       padding: 3rem 2rem;
-      color: #ff3b30;
+      color: var(--color-wrong);
       font-size: 0.95rem;
     }
 
     .btn {
       display: inline-block;
       padding: 0.75rem 1.75rem;
-      background: #0071e3;
-      color: white;
+      background: var(--color-accent);
+      color: #fff;
       border: none;
       border-radius: 980px;
       font-size: 0.95rem;
@@ -167,11 +167,12 @@ export class AppRoot extends LitElement {
     }
 
     .btn:hover {
-      background: #0077ed;
+      background: var(--color-accent-hover);
     }
 
     .btn:focus-visible {
-      outline: 3px solid rgba(0, 113, 227, 0.4);
+      outline: 3px solid
+        color-mix(in srgb, var(--color-accent) 40%, transparent);
       outline-offset: 2px;
     }
 
