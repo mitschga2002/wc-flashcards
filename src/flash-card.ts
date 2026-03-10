@@ -16,8 +16,36 @@ export class FlashCard extends LitElement {
 
   @query(".card") cardEl?: HTMLElement;
 
+  private boundKeyHandler = this.handleKeydown.bind(this);
+
   get isCorrect() {
     return this.selectedIndex === this.correctIndex;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("keydown", this.boundKeyHandler);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener("keydown", this.boundKeyHandler);
+  }
+
+  private handleKeydown(e: KeyboardEvent) {
+    if (this.leaving) return;
+
+    const num = parseInt(e.key);
+    if (!this.answered && num >= 1 && num <= this.choices.length) {
+      e.preventDefault();
+      this.handleClick(num - 1);
+      return;
+    }
+
+    if (this.answered && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      this.handleNext();
+    }
   }
 
   handleClick(index: number) {
@@ -65,6 +93,7 @@ export class FlashCard extends LitElement {
                 @click=${() => this.handleClick(index)}
                 ?disabled=${this.answered}
               >
+                <span class="key-hint">${index + 1}</span>
                 ${choice}
               </button>
             `;
@@ -141,6 +170,9 @@ export class FlashCard extends LitElement {
     }
 
     .choice {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
       background: #f5f5f7;
       border: 1.5px solid transparent;
       border-radius: 12px;
@@ -149,6 +181,21 @@ export class FlashCard extends LitElement {
       font-size: 0.95rem;
       font-weight: 400;
       cursor: pointer;
+      text-align: left;
+    }
+
+    .key-hint {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.4rem;
+      height: 1.4rem;
+      border-radius: 5px;
+      background: #e8e8ed;
+      color: #86868b;
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
     }
 
     .choice:hover:not(:disabled) {
