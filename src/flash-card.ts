@@ -32,7 +32,7 @@ export class FlashCard extends LitElement {
     window.removeEventListener("keydown", this.boundKeyHandler);
   }
 
-  private handleKeydown(e: KeyboardEvent) {
+  handleKeydown(e: KeyboardEvent) {
     if (this.leaving) return;
 
     const num = parseInt(e.key);
