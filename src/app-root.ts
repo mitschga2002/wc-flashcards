@@ -1,27 +1,40 @@
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
-
-interface CardItem {
-  question: string;
-  choices: string[];
-  correctIndex: number;
-}
+import type { FlashCard, QuizStats } from "./types.js";
+import "./quiz-progress.js";
+import "./quiz-results.js";
+import "./flash-card.js";
 
 @customElement("app-root")
 export class AppRoot extends LitElement {
-  @state() cards: CardItem[] = [];
-  @state() stats = {
-    correct: 0,
-    wrong: 0,
-  };
+  @state() cards: FlashCard[] = [];
+  @state() loading = true;
+  @state() error = "";
+  @state() stats: QuizStats = { correct: 0, wrong: 0 };
   @state() currentCardIndex = 0;
 
+  get isFinished(): boolean {
+    return this.cards.length > 0 && this.currentCardIndex >= this.cards.length;
+  }
+
   async firstUpdated() {
-    const response = await fetch(
-      "https://fh-salzburg-3e27a-default-rtdb.europe-west1.firebasedatabase.app/flashcards.json",
-    );
-    const result = await response.json();
-    this.cards = result;
+    await this.fetchCards();
+  }
+
+  async fetchCards() {
+    this.loading = true;
+    this.error = "";
+    try {
+      const response = await fetch(
+        "https://fh-salzburg-3e27a-default-rtdb.europe-west1.firebasedatabase.app/flashcards.json",
+      );
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      this.cards = await response.json();
+    } catch {
+      this.error = "Failed to load cards";
+    } finally {
+      this.loading = false;
+    }
   }
 
   handleAnswerSelected(event: CustomEvent) {
@@ -33,24 +46,137 @@ export class AppRoot extends LitElement {
     this.currentCardIndex++;
   }
 
-  render() {
-    return html`<section>
-      <slot></slot>
-      <p>Correct: ${this.stats.correct} | Wrong: ${this.stats.wrong}</p>
-      <div>
-        ${this.cards[this.currentCardIndex]
-          ? html` <card-item
-              .question=${this.cards[this.currentCardIndex]?.question}
-              .choices=${this.cards[this.currentCardIndex]?.choices}
-              correctIndex=${this.cards[this.currentCardIndex]?.correctIndex}
-              @answer-selected=${this.handleAnswerSelected}
-            ></card-item>`
-          : html`<p>No more cards available.</p>`}
-      </div>
-    </section>`;
+  handleRestart() {
+    this.currentCardIndex = 0;
+    this.stats = { correct: 0, wrong: 0 };
   }
 
-  static styles = css``;
+  render() {
+    return html`
+      <main>
+        <header>
+          <slot></slot>
+        </header>
+
+        <section class="content">
+          ${this.loading
+            ? html`<div class="loader">
+                <div class="spinner"></div>
+                <p>Loading flashcards…</p>
+              </div>`
+            : this.error
+              ? html`<div class="error">
+                  <p>${this.error}</p>
+                  <button class="btn" @click=${this.fetchCards}>Retry</button>
+                </div>`
+              : this.isFinished
+                ? html`<quiz-results
+                    .stats=${this.stats}
+                    .total=${this.cards.length}
+                    @quiz-restart=${this.handleRestart}
+                  ></quiz-results>`
+                : html`
+                    <quiz-progress
+                      .current=${this.currentCardIndex}
+                      .total=${this.cards.length}
+                    ></quiz-progress>
+                    <flash-card
+                      .question=${this.cards[this.currentCardIndex].question}
+                      .choices=${this.cards[this.currentCardIndex].choices}
+                      .correctIndex=${this.cards[this.currentCardIndex]
+                        .correctIndex}
+                      @answer-selected=${this.handleAnswerSelected}
+                    ></flash-card>
+                  `}
+        </section>
+      </main>
+    `;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    main {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    ::slotted(h2) {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 4rem 0;
+      color: #86868b;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e8e8ed;
+      border-top-color: #0071e3;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #ff3b30;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.75rem;
+      background: #0071e3;
+      color: white;
+      border: none;
+      border-radius: 980px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #0077ed;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid rgba(0, 113, 227, 0.4);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 500px) {
+      :host {
+        padding: 1.5rem 1rem;
+      }
+    }
+  `;
 }
 
 declare global {
