@@ -53,6 +53,7 @@ export class QuizProgress extends LitElement {
       height: 100%;
       background: #0071e3;
       border-radius: 2px;
+      transition: width 0.4s ease;
     }
   `;
 }
