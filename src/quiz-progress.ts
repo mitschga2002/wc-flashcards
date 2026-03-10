@@ -6,7 +6,7 @@ export class QuizProgress extends LitElement {
   @property({ type: Number }) current = 0;
   @property({ type: Number }) total = 0;
 
-  private get percent(): number {
+  get percent() {
     return this.total > 0 ? (this.current / this.total) * 100 : 0;
   }
 

@@ -7,7 +7,7 @@ export class QuizResults extends LitElement {
   @property({ attribute: false }) stats: QuizStats = { correct: 0, wrong: 0 };
   @property({ type: Number }) total = 0;
 
-  get scorePercent(): number {
+  get scorePercent() {
     const answered = this.stats.correct + this.stats.wrong;
     if (answered === 0) return 0;
     return Math.round((this.stats.correct / answered) * 100);
@@ -41,16 +41,24 @@ export class QuizResults extends LitElement {
   }
 
   static styles = css`
-    :host {
-      display: block;
-    }
-
     .results {
       text-align: center;
       padding: 3rem 2rem;
       background: white;
       border: 1px solid #d2d2d7;
       border-radius: 16px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     .score {
@@ -106,7 +114,6 @@ export class QuizResults extends LitElement {
       border: none;
       border-radius: 980px;
       font-size: 0.95rem;
-      font-weight: 500;
       cursor: pointer;
     }
 

@@ -1,5 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { keyed } from "lit/directives/keyed.js";
 import type { FlashCard, QuizStats } from "./types.js";
 import "./quiz-progress.js";
 import "./quiz-results.js";
@@ -13,7 +14,7 @@ export class AppRoot extends LitElement {
   @state() stats: QuizStats = { correct: 0, wrong: 0 };
   @state() currentCardIndex = 0;
 
-  get isFinished(): boolean {
+  get isFinished() {
     return this.cards.length > 0 && this.currentCardIndex >= this.cards.length;
   }
 
@@ -80,13 +81,16 @@ export class AppRoot extends LitElement {
                       .current=${this.currentCardIndex}
                       .total=${this.cards.length}
                     ></quiz-progress>
-                    <flash-card
-                      .question=${this.cards[this.currentCardIndex].question}
-                      .choices=${this.cards[this.currentCardIndex].choices}
-                      .correctIndex=${this.cards[this.currentCardIndex]
-                        .correctIndex}
-                      @answer-selected=${this.handleAnswerSelected}
-                    ></flash-card>
+                    ${keyed(
+                      this.currentCardIndex,
+                      html`<flash-card
+                        .question=${this.cards[this.currentCardIndex].question}
+                        .choices=${this.cards[this.currentCardIndex].choices}
+                        .correctIndex=${this.cards[this.currentCardIndex]
+                          .correctIndex}
+                        @answer-selected=${this.handleAnswerSelected}
+                      ></flash-card>`,
+                    )}
                   `}
         </section>
       </main>

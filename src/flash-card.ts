@@ -1,5 +1,5 @@
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { map } from "lit/directives/map.js";
 
@@ -12,7 +12,11 @@ export class FlashCard extends LitElement {
   @state() selectedIndex: number | null = null;
   @state() answered = false;
 
-  get isCorrect(): boolean {
+  @state() leaving = false;
+
+  @query(".card") cardEl?: HTMLElement;
+
+  get isCorrect() {
     return this.selectedIndex === this.correctIndex;
   }
 
@@ -23,20 +27,26 @@ export class FlashCard extends LitElement {
   }
 
   handleNext() {
-    this.dispatchEvent(
-      new CustomEvent("answer-selected", {
-        detail: { isCorrect: this.isCorrect },
-        bubbles: true,
-        composed: true,
-      }),
+    this.leaving = true;
+    this.cardEl?.addEventListener(
+      "animationend",
+      () => {
+        this.dispatchEvent(
+          new CustomEvent("answer-selected", {
+            detail: { isCorrect: this.isCorrect },
+          }),
+        );
+        this.selectedIndex = null;
+        this.answered = false;
+        this.leaving = false;
+      },
+      { once: true },
     );
-    this.selectedIndex = null;
-    this.answered = false;
   }
 
   render() {
     return html`
-      <div class="card">
+      <div class="card ${this.leaving ? "leaving" : ""}">
         <h3 class="question">${this.question}</h3>
         <div class="choices">
           ${map(this.choices, (choice, index) => {
@@ -72,24 +82,45 @@ export class FlashCard extends LitElement {
   }
 
   static styles = css`
-    :host {
-      display: block;
-    }
-
     .card {
       background: white;
       border: 1px solid #d2d2d7;
       border-radius: 16px;
       padding: 2rem;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .card.leaving {
+      animation: slideOut 0.25s ease-in forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
     }
 
     .question {
       font-size: 1.3rem;
       font-weight: 600;
       color: #1d1d1f;
-      letter-spacing: -0.02em;
       margin: 0 0 1.5rem;
-      line-height: 1.35;
     }
 
     .choices {
@@ -117,9 +148,7 @@ export class FlashCard extends LitElement {
       color: #1d1d1f;
       font-size: 0.95rem;
       font-weight: 400;
-      line-height: 1.4;
       cursor: pointer;
-      text-align: left;
     }
 
     .choice:hover:not(:disabled) {
@@ -161,7 +190,6 @@ export class FlashCard extends LitElement {
       border-radius: 980px;
       font-size: 0.95rem;
       font-weight: 500;
-      letter-spacing: -0.01em;
       cursor: pointer;
     }
 
@@ -171,7 +199,7 @@ export class FlashCard extends LitElement {
 
     .next-btn:disabled {
       background: #d2d2d7;
-      cursor: default;
+      cursor: not-allowed;
     }
 
     .next-btn:focus-visible {
